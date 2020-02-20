@@ -7,18 +7,19 @@ export function determineOutput(context: Context): Output {
     const output: Output = new Output();
     const libraryIds: Set<number> = new Set<number>();
     const bookIds: Set<number> = new Set<number>();
-    const firstLibrary = findFirstLibrary(context.libraries);
+    let [firstLibrary, filteredLibraries] = findFirstLibrary(context.libraries);
     let daysLeft: number = context.daysForScanning;
 
     addLibrary(libraryIds, bookIds, output, firstLibrary);
 
     daysLeft -= firstLibrary.signupProcess;
 
-    let filteredLibraries: Library[] = filterDuplicateLibraries(context.libraries, libraryIds);
     let lastProgress: number = 0;
 
     while (filteredLibraries.length > 0) {
-        const library = findNextLibrary(libraryIds, bookIds, context.libraries);
+        const result = findNextLibrary(libraryIds, bookIds, context.libraries);
+        const library = result[0];
+        filteredLibraries = result[1];
 
         addLibrary(libraryIds, bookIds, output, library);
 
@@ -27,8 +28,6 @@ export function determineOutput(context: Context): Output {
         if (daysLeft <= 0) {
             return output;
         }
-
-        filteredLibraries = filterDuplicateLibraries(filteredLibraries, libraryIds);
 
         const progress: number = 100 - Math.round(daysLeft / context.daysForScanning * 100);
 
@@ -52,32 +51,56 @@ function addLibrary(libraryIds: Set<number>, bookIds: Set<number>, output: Outpu
     output.addLibrary(library.id, library.getSortedBookIds());
 }
 
-function findNextLibrary(libraryIds: Set<number>, bookIds: Set<number>, libraries: Library[]): Library {
+function findNextLibrary(libraryIds: Set<number>, bookIds: Set<number>, libraries: Library[]): [Library, Library[]] {
     for (const library of libraries) {
         library.filterDuplicates(bookIds);
     }
 
-    return libraries.reduce((nextLibrary: Library, library: Library) => {
-        return library.getBookRateScore() > nextLibrary.getBookRateScore()
-            ? library
-            : nextLibrary;
-    }, libraries[0]);
+    const filteredLibraries: Library[] = [];
+    let nextLibrary: Library = libraries[0];
+
+    nextLibrary.filterDuplicates(bookIds);
+
+    for (let i = 1; i < libraries.length; i++) {
+        const library = libraries[i];
+
+        library.filterDuplicates(bookIds);
+
+        if (library.getBookRateScore() > nextLibrary.getBookRateScore()) {
+            filteredLibraries.push(nextLibrary);
+
+            nextLibrary = library;
+        }
+    }
+
+    return [
+        nextLibrary,
+        libraries
+    ];
 }
 
-function findFirstLibrary(libraries: Library[]): Library {
-    return libraries.reduce((shortestLibrary: Library, library: Library) => {
-        if (library.signupProcess > shortestLibrary.signupProcess) {
-            return shortestLibrary;
+function findFirstLibrary(libraries: Library[]): [Library, Library[]] {
+    const filteredLibraries: Library[] = [];
+    let firstLibrary: Library = libraries[0];
+
+    for (let i = 1; i < libraries.length; i++) {
+        const library = libraries[i];
+
+        if (library.signupProcess > firstLibrary.signupProcess) {
+            filteredLibraries.push(library);
+            continue;
         }
 
-        if (library.getBookScore() < shortestLibrary.getBookScore()) {
-            return shortestLibrary;
+        if (library.getBookScore() < firstLibrary.getBookScore()) {
+            filteredLibraries.push(library);
+            continue;
         }
 
-        return library;
-    }, libraries[0]);
-}
+        firstLibrary = library;
+    }
 
-function filterDuplicateLibraries(libraries: Library[], libraryIds: Set<number>): Library[] {
-    return libraries.filter((library: Library) => !libraryIds.has(library.id));
+    return [
+        firstLibrary,
+        filteredLibraries
+    ];
 }
