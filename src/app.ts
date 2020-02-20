@@ -1,3 +1,6 @@
 import { parseInput } from './parseInput';
+import { Context } from './Context';
 
-parseInput('a_example.txt');
+const context: Context = parseInput('a_example.txt');
+
+console.dir(context.libraries);
