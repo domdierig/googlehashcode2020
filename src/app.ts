@@ -2,6 +2,7 @@ import { parseInput } from './parseInput';
 import { Context } from './Context';
 import { Output } from './Output';
 import { writeOutput } from './writeOutput';
+import consola from 'consola';
 
 const inputFileNames: string[] = [
     'a_example.txt',
@@ -13,6 +14,8 @@ const inputFileNames: string[] = [
 ];
 
 for (const inputFileName of inputFileNames) {
+    consola.start(`Start working on ${inputFileName}...`);
+
     const context: Context = parseInput(inputFileName);
     const output: Output = new Output();
 
@@ -20,5 +23,9 @@ for (const inputFileName of inputFileNames) {
         output.addLibrary(library.id, library.books);
     }
 
+    consola.start(`Writing output for ${inputFileName}...`);
+
     writeOutput(inputFileName, output);
+
+    consola.success(`Finished ${inputFileName}!`);
 }
