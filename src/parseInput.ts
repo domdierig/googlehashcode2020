@@ -10,11 +10,12 @@ export function parseInput(fileName: string): Context {
     const [totalBooks, totalLibraries, daysForScanning] = splitAndParseInt(firstLine);
     const books: number[] = splitAndParseInt(secondLine);
     const libraries: Library[] = [];
+    let nextLibraryId: number = 0;
 
     for (let i = 0; i < lines.length - 1; i += 2) {
         const libraryContext: string = lines[i];
         const libraryBooks: string = lines[i + 1];
-        const library: Library = parseLibrary(libraryContext, libraryBooks);
+        const library: Library = parseLibrary(nextLibraryId++, libraryContext, libraryBooks);
 
         libraries.push(library);
     }
@@ -24,12 +25,12 @@ export function parseInput(fileName: string): Context {
     );
 }
 
-function parseLibrary(libraryContext: string, libraryBooks: string): Library {
+function parseLibrary(libraryId: number, libraryContext: string, libraryBooks: string): Library {
     const [totalBooks, signupProcess, shippingSpeed] = splitAndParseInt(libraryContext);
     const books: number[] = splitAndParseInt(libraryBooks);
 
     return new Library(
-        totalBooks, signupProcess, shippingSpeed, books
+        libraryId, totalBooks, signupProcess, shippingSpeed, books
     );
 }
 
