@@ -2,6 +2,7 @@ import { parseInput } from './parseInput';
 import { Context } from './Context';
 import { Output } from './Output';
 import { writeOutput } from './writeOutput';
+import { scoreLibs } from './scoreLibs'
 
 const inputFileNames: string[] = [
     'a_example.txt',
@@ -14,7 +15,9 @@ const inputFileNames: string[] = [
 
 for (const inputFileName of inputFileNames) {
     const context: Context = parseInput(inputFileName);
-    const output: Output = new Output();
+	const output: Output = new Output();
+	
+	scoreLibs(context);
 
     for (const library of context.libraries) {
         output.addLibrary(library.id, library.books);
