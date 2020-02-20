@@ -4,6 +4,7 @@ import { Output } from './Output';
 import { writeOutput } from './writeOutput';
 import { scoreLibs } from './scoreLibs'
 import consola from 'consola';
+import { determineOutput } from './determineOutput';
 
 const inputFileNames: string[] = [
     'a_example.txt',
@@ -18,13 +19,10 @@ for (const inputFileName of inputFileNames) {
     consola.start(`Start working on ${inputFileName}...`);
 
     const context: Context = parseInput(inputFileName);
-	const output: Output = new Output();
-	
+
 	scoreLibs(context);
 
-    for (const library of context.libraries) {
-        output.addLibrary(library.id, library.books);
-    }
+    const output: Output = determineOutput(context);
 
     consola.start(`Writing output for ${inputFileName}...`);
 
