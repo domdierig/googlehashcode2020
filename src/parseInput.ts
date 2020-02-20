@@ -6,7 +6,9 @@ import { Library } from './Library';
 export function parseInput(fileName: string): Context {
     const filePath: string = path.join('input', fileName);
     const content: string = fs.readFileSync(filePath, { encoding: 'utf8' });
-    const [firstLine, secondLine, ...lines] = content.split('\n');
+    const [firstLine, secondLine, ...lines] = content
+        .split('\n')
+        .filter((line: string) => line.length > 0);
     const [totalBooks, totalLibraries, daysForScanning] = splitAndParseInt(firstLine);
     const books: number[] = splitAndParseInt(secondLine);
     const libraries: Library[] = [];
