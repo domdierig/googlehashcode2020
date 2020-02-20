@@ -9,7 +9,7 @@ export class Library {
         public readonly totalBooks: number,
         public readonly signupProcess: number,
         public readonly shippingSpeed: number,
-        public readonly books: Book[],
+        public books: Book[],
     ) {}
 
     public getBookScore(): number {
@@ -20,6 +20,10 @@ export class Library {
         return this.books
             .sort((a: Book, b: Book) => b.score - a.score)
             .map((book: Book) => book.id);
+    }
+
+    public filterDuplicates(scannedBookIds: Set<number>): void {
+        this.books = this.books.filter((book: Book) => !scannedBookIds.has(book.id));
     }
 
 }

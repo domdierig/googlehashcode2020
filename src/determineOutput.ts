@@ -10,10 +10,14 @@ export function determineOutput(context: Context): Output {
 
     addLibrary(libraryIds, bookIds, output, firstLibrary);
 
-    for (let i = 0; i < context.libraries.length; i++) {
+    let filteredLibraries: Library[] = filterDuplicateLibraries(context.libraries, libraryIds);
+
+    while (filteredLibraries.length > 0) {
         const library = findNextLibrary(libraryIds, bookIds, context.libraries);
 
         addLibrary(libraryIds, bookIds, output, library);
+
+        filteredLibraries = filterDuplicateLibraries(filteredLibraries, libraryIds);
     }
 
     return output;
@@ -29,10 +33,16 @@ function addLibrary(libraryIds: Set<number>, bookIds: Set<number>, output: Outpu
     output.addLibrary(library.id, library.getSortedBookIds());
 }
 
-function findNextLibrary(libraryIds: Set<number>, bookIds: Set<number>, library: Library[]): Library {
-    library.sort((a: Library, b: Library) => {
-        const scoreA
-    });
+function findNextLibrary(libraryIds: Set<number>, bookIds: Set<number>, libraries: Library[]): Library {
+    for (const library of libraries) {
+        library.filterDuplicates(bookIds);
+    }
+
+    return libraries.reduce((nextLibrary: Library, library: Library) => {
+        return library.getBookScore() > nextLibrary.getBookScore()
+            ? library
+            : nextLibrary;
+    }, libraries[0]);
 }
 
 function findFirstLibrary(libraries: Library[]): Library {
@@ -47,4 +57,8 @@ function findFirstLibrary(libraries: Library[]): Library {
 
         return library;
     }, libraries[0]);
+}
+
+function filterDuplicateLibraries(libraries: Library[], libraryIds: Set<number>): Library[] {
+    return libraries.filter((library: Library) => !libraryIds.has(library.id));
 }
