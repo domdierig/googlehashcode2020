@@ -1,6 +1,24 @@
 import { parseInput } from './parseInput';
 import { Context } from './Context';
+import { Output } from './Output';
+import { writeOutput } from './writeOutput';
 
-const context: Context = parseInput('a_example.txt');
+const inputFileNames: string[] = [
+    'a_example.txt',
+    'b_read_on.txt',
+    'c_incunabula.txt',
+    'd_tough_choices.txt',
+    'e_so_many_books.txt',
+    'f_libraries_of_the_world.txt',
+];
 
-console.dir(context.libraries);
+for (const inputFileName of inputFileNames) {
+    const context: Context = parseInput(inputFileName);
+    const output: Output = new Output();
+
+    for (const library of context.libraries) {
+        output.addLibrary(library.id, library.books);
+    }
+
+    writeOutput(inputFileName, output);
+}
