@@ -7,8 +7,11 @@ export function determineOutput(context: Context): Output {
     const libraryIds: Set<number> = new Set<number>();
     const bookIds: Set<number> = new Set<number>();
     const firstLibrary = findFirstLibrary(context.libraries);
+    let daysLeft: number = context.daysForScanning;
 
     addLibrary(libraryIds, bookIds, output, firstLibrary);
+
+    daysLeft -= firstLibrary.signupProcess;
 
     let filteredLibraries: Library[] = filterDuplicateLibraries(context.libraries, libraryIds);
 
@@ -16,6 +19,12 @@ export function determineOutput(context: Context): Output {
         const library = findNextLibrary(libraryIds, bookIds, context.libraries);
 
         addLibrary(libraryIds, bookIds, output, library);
+
+        daysLeft -= library.signupProcess;
+
+        if (daysLeft <= 0) {
+            return output;
+        }
 
         filteredLibraries = filterDuplicateLibraries(filteredLibraries, libraryIds);
     }
