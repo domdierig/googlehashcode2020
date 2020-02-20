@@ -1,6 +1,7 @@
 import { Context } from './Context';
 import { Output } from './Output';
 import { Library } from './Library';
+import consola from 'consola';
 
 export function determineOutput(context: Context): Output {
     const output: Output = new Output();
@@ -14,6 +15,7 @@ export function determineOutput(context: Context): Output {
     daysLeft -= firstLibrary.signupProcess;
 
     let filteredLibraries: Library[] = filterDuplicateLibraries(context.libraries, libraryIds);
+    let lastProgress: number = 0;
 
     while (filteredLibraries.length > 0) {
         const library = findNextLibrary(libraryIds, bookIds, context.libraries);
@@ -27,6 +29,14 @@ export function determineOutput(context: Context): Output {
         }
 
         filteredLibraries = filterDuplicateLibraries(filteredLibraries, libraryIds);
+
+        const progress: number = 100 - Math.round(daysLeft / context.daysForScanning * 100);
+
+        if (progress - lastProgress >= 10) {
+            consola.info(`${progress}%`);
+
+            lastProgress = progress;
+        }
     }
 
     return output;
