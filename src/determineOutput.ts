@@ -48,7 +48,7 @@ function findNextLibrary(libraryIds: Set<number>, bookIds: Set<number>, librarie
     }
 
     return libraries.reduce((nextLibrary: Library, library: Library) => {
-        return library.getBookScore() > nextLibrary.getBookScore()
+        return library.getBookRateScore() > nextLibrary.getBookRateScore()
             ? library
             : nextLibrary;
     }, libraries[0]);
