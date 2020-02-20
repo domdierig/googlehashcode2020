@@ -17,7 +17,7 @@ export function determineOutput(context: Context): Output {
     let lastProgress: number = 0;
 
     while (filteredLibraries.length > 0) {
-        const result = findNextLibrary(libraryIds, bookIds, context.libraries);
+        const result = findNextLibrary(libraryIds, bookIds, filteredLibraries);
         const library = result[0];
         filteredLibraries = result[1];
 
@@ -52,6 +52,13 @@ function addLibrary(libraryIds: Set<number>, bookIds: Set<number>, output: Outpu
 }
 
 function findNextLibrary(libraryIds: Set<number>, bookIds: Set<number>, libraries: Library[]): [Library, Library[]] {
+    if (libraries.length === 1) {
+        return [
+            libraries[0],
+            []
+        ];
+    }
+
     for (const library of libraries) {
         library.filterDuplicates(bookIds);
     }
@@ -70,12 +77,16 @@ function findNextLibrary(libraryIds: Set<number>, bookIds: Set<number>, librarie
             filteredLibraries.push(nextLibrary);
 
             nextLibrary = library;
+
+            continue;
         }
+
+        filteredLibraries.push(library);
     }
 
     return [
         nextLibrary,
-        libraries
+        filteredLibraries
     ];
 }
 
@@ -95,6 +106,8 @@ function findFirstLibrary(libraries: Library[]): [Library, Library[]] {
             filteredLibraries.push(library);
             continue;
         }
+
+        filteredLibraries.push(firstLibrary);
 
         firstLibrary = library;
     }
