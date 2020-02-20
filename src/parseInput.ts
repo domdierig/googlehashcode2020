@@ -29,12 +29,12 @@ export function parseInput(fileName: string): Context {
 }
 
 function parseLibrary(libraryId: number, libraryContext: string, libraryBooks: string, bookScores: number[]): Library {
-    const [totalBooks, signupProcess, shippingSpeed] = splitAndParseInt(libraryContext);
+    const [totalBooks, signupProcess, shippingRate] = splitAndParseInt(libraryContext);
     const bookIds: number[] = splitAndParseInt(libraryBooks);
     const books: Book[] = bookIds.map((bookId: number) => new Book(bookId, bookScores[bookId]));
 
     return new Library(
-        libraryId, totalBooks, signupProcess, shippingSpeed, books
+        libraryId, totalBooks, signupProcess, shippingRate, books
     );
 }
 

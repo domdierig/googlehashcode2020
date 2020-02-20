@@ -8,7 +8,7 @@ export class Library {
         public readonly id: number,
         public readonly totalBooks: number,
         public readonly signupProcess: number,
-        public readonly shippingSpeed: number,
+        public readonly shippingRate: number,
         public books: Book[],
     ) {}
 
