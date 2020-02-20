@@ -1,3 +1,7 @@
+output/*.txt
+src.zip
+
+
 # Logs
 logs
 *.log
