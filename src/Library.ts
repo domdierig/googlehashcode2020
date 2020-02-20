@@ -16,4 +16,10 @@ export class Library {
         return this.books.reduce((score: number, book: Book) => score + book.score, 0);
     }
 
+    public getSortedBookIds(): number[] {
+        return this.books
+            .sort((a: Book, b: Book) => b.score - a.score)
+            .map((book: Book) => book.id);
+    }
+
 }
