@@ -80,24 +80,10 @@ function findNextLibrary(libraryIds: Set<number>, bookIds: Set<number>, librarie
 }
 
 function findFirstLibrary(libraries: Library[]): [Library, Library[]] {
-    const filteredLibraries: Library[] = [];
+    let filteredLibraries: Library[] = [];
     let firstLibrary: Library = libraries[0];
 
-    for (let i = 1; i < libraries.length; i++) {
-        const library = libraries[i];
-
-        if (library.signupProcess > firstLibrary.signupProcess) {
-            filteredLibraries.push(library);
-            continue;
-        }
-
-        if (library.getBookScore() < firstLibrary.getBookScore()) {
-            filteredLibraries.push(library);
-            continue;
-        }
-
-        firstLibrary = library;
-    }
+    filteredLibraries = libraries.sort((a,b) => a.score - b.score);
 
     return [
         firstLibrary,
